@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 class LoginController extends Controller{
     public function log(Request $request)
     {
-        $response = Http::post('http://192.168.100.223:8080/api/register', [
+        $response = Http::post('http://192.168.30.125:8080/api/register', [
             'email' => $request->email,
             'password' => $request->password,
         ]);

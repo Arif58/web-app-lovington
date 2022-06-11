@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+use App\Models\Category;
 
 class CategoryController extends Controller
 {
@@ -16,12 +17,13 @@ class CategoryController extends Controller
     {
         $no = 0;
         $client = new Client();
-        $url = "http://192.168.1.234:8080/api/category";
+        $url = "http://10.29.62.100:8080/api/category";
         $response = $client->request('GET', $url, [
             'verify' => false,
         ]);
         $responseBody = json_decode($response->getBody());
         return view('category.index', compact('responseBody', 'no'));
+     
     }
 
     /**
@@ -43,7 +45,19 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $client = new Client();
+        $url = "http://10.29.62.100:8080/api/category";
+        $response = $client->request('POST', $url, [
+            'form_params' => [
+                'category_name' => $request->category_name,
+                'photo_url' => $request->photo_url,
+            ]
+        ]);
+        if($response->getStatusCode()) {
+            return redirect('/category')->with('success', 'Category created successfully');
+        } else {
+            echo "Failed";
+        }
     }
 
     /**
@@ -65,14 +79,12 @@ class CategoryController extends Controller
      */
     public function edit($category_id)
     {
-        $categoryId = $category_id;
         $client = new Client();
-        $url = "http://192.168.1.234:8080/api/category/".$categoryId;
+        $url = "http://10.29.62.100:8080/api/category/".$category_id;
         $response = $client->request('GET', $url, [
             'verify' => false,
         ]);
         $responseBody = json_decode($response->getBody());
-        // $data = $responseBody->
         return view('category.edit', compact('responseBody'));
     }
 
@@ -83,9 +95,21 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $category_id)
     {
-        //
+        $client = new Client();
+        $url = "http://10.29.62.100:8080/api/category/".$category_id;
+        $response = $client->request('PUT', $url, [
+            'form_params' => [
+                'category_name' => $request->category_name,
+                'photo_url' => $request->photo_url,
+            ]
+        ]);
+        if($response->getStatusCode()) {
+            return redirect('/category')->with('success', 'Category updated successfully');
+        } else {
+            echo "Failed";
+        }
     }
 
     /**
@@ -94,8 +118,19 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($category_id)
     {
-        
+        $client = new Client();
+        $url = "http://10.29.62.100:8080/api/category/".$category_id;
+        $response = $client->request('DELETE', $url, [
+            'form_params' => [
+                'category_id' => $category_id,
+            ]
+        ]);
+        if($response->getStatusCode()) {
+            return redirect('/category')->with('success', 'Category deleted successfully');
+        } else {
+            echo "Failed";
+        }
     }
 }

@@ -16,12 +16,18 @@ class ProductController extends Controller
     {
         $no = 0;
         $client = new Client();
-        $url = "http://192.168.1.234:8080/api/product";
-        $response = $client->request('GET', $url, [
+        $urlProduct = "http://10.29.62.100:8080/api/product";
+        $urlCategory = "http://10.29.62.100:8080/api/category";
+        $responseProduct = $client->request('GET', $urlProduct, [
             'verify' => false,
         ]);
-        $responseBody = json_decode($response->getBody());
-        return view('product.index', compact('responseBody', 'no'));
+        $responseCategory = $client->request('GET', $urlCategory, [
+            'verify' => false,
+        ]);
+        $responseBodyProduct = json_decode($responseProduct->getBody());
+        
+        $responseBodyCategory = json_decode($responseCategory->getBody());
+        return view('product.index', compact('responseBodyProduct', 'responseBodyCategory', 'no'));
     }
 
     /**
@@ -31,7 +37,13 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $client = new Client();
+        $url = "http://10.29.62.100:8080/api/category";
+        $response = $client->request('GET', $url, [
+            'verify' => false,
+        ]);
+        $responseBody = json_decode($response->getBody());
+        return view('product.create', compact('responseBody'));
     }
 
     /**
@@ -42,7 +54,22 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $client = new Client();
+        $url = "http://10.29.62.100:8080/api/product";
+        $response = $client->request('POST', $url, [
+            'form_params' => [
+                'category_id' => $request->category_id,
+                'product_name' => $request->product_name,
+                'price' => $request->price,
+                'desc' => $request->desc,
+                'photo_url' => $request->photo_url,
+            ]
+        ]);
+        if($response->getStatusCode()) {
+            return redirect('/product')->with('success', 'Product created successfully');
+        } else {
+            echo "Failed";
+        }
     }
 
     /**
@@ -62,9 +89,22 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($product_id, $category_id)
     {
-        //
+        $client = new Client();
+        $urlProduct = "http://10.29.62.100:8080/api/product/".$product_id;
+        $urlCategory = "http://10.29.62.100:8080/api/category/";
+        $responseProduct = $client->request('GET', $urlProduct, [
+            'verify' => false,
+        ]);
+        $responseCategory = $client->request('GET', $urlCategory, [
+            'verify' => false,
+        ]);
+        $responseBodyProduct = json_decode($responseProduct->getBody());
+        $responseBodyCategory = json_decode($responseCategory->getBody());
+        // dd($responseBodyProduct);
+        return view('product.edit', compact('responseBodyProduct', 'responseBodyCategory', 'product_id', 'category_id'));
+
     }
 
     /**
@@ -74,9 +114,24 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $product_id)
     {
-        //
+        $client = new Client();
+        $url = "http://10.29.62.100:8080/api/product/".$product_id;
+        $response = $client->request('PUT', $url, [
+            'form_params' => [
+                'category_id' => $request->category_id,
+                'product_name' => $request->product_name,
+                'price' => $request->price,
+                'desc' => $request->desc,
+                'photo_url' => $request->photo_url,
+            ]
+        ]);
+        if($response->getStatusCode()) {
+            return redirect('/product')->with('success', 'Product updated successfully');
+        } else {
+            echo "Failed";
+        }
     }
 
     /**
@@ -85,8 +140,19 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($product_id)
     {
-        //
+        $client = new Client();
+        $url = "http://10.29.62.100:8080/api/product/".$product_id;
+        $response = $client->request('DELETE', $url, [
+            'form_params' => [
+                'product_id' => $product_id,
+            ]
+        ]);
+        if($response->getStatusCode()) {
+            return redirect('/product')->with('success', 'Product deleted successfully');
+        } else {
+            echo "Failed";
+        }
     }
 }

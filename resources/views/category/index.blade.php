@@ -33,7 +33,7 @@
     <tr>
       <td>{{ ++$no }}</td>
       <td>{{ $response->category_name }}</td>
-      <td>{{ $response->photo_url }}</td>
+      <td><img src="{{ $response->photo_url }}" style="width: 200px"></td>
       <td class="d-flex justify-content-center">
         <div >
             <form action="{{ route('category.destroy', $response->category_id) }}" method="post">
